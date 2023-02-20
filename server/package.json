@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node dist/index.js",
+    "start:dev": "npx nodemon",
+    "build": "rimraf ./dist && tsc",
+    "symlink": "ln -sf %INIT_CWD%/../client/src/types %INIT_CWD%/src/types"
+  },
+  "author": "Maks",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
