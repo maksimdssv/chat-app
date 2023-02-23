@@ -1,4 +1,4 @@
-import { SectionKey } from './UsersTab';
+import { SectionKey } from '../UsersTab';
 
 export interface SectionButtonProps {
   position: 'left' | 'right';

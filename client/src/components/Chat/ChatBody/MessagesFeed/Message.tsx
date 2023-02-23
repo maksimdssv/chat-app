@@ -1,11 +1,9 @@
-export interface MessageProps {
-  name: string;
-  date: string;
-  text: string;
-  status: 'received' | 'sent';
-}
+import { Message as MessageType } from '../../../../types/socket';
 
-export type MessageType = Omit<MessageProps, 'status'>;
+export interface MessageProps extends MessageType {
+  status: 'received' | 'sent';
+  seenAt: string;
+}
 
 const colors = {
   received: 'bg-message-received',
@@ -22,19 +20,24 @@ const clipperPositions = {
   received: 'left-[-25px] rotate-[-90deg]',
 };
 
-const Message = ({ name, status, text, date }: MessageProps) => {
+const Message = ({ user, status, text, date, seenAt }: MessageProps) => {
   return (
     <div
       className={`relative flex w-3/4 max-w-6xl flex-col rounded-xl bg-white ${positions[status]} shadow-lg`}
     >
-      <h4 className={`${colors[status]} rounded-t-xl py-2 pl-4`}>{name}</h4>
+      <h4 className={`${colors[status]} rounded-t-xl py-2 pl-4`}>{user}</h4>
       <p className={'break-all px-4 pt-2 pb-3 text-lg font-semibold'}>{text}</p>
       <p className={'absolute right-4 top-3 text-date'}>{date}</p>
       <div
-        className={`triangle absolute  top-12 h-8 w-6 bg-inherit text-transparent ${clipperPositions[status]} shadow-xl`}
+        className={`triangle absolute top-12 h-8 w-6 bg-inherit text-transparent ${clipperPositions[status]}`}
       >
         &nbsp;
       </div>
+      {seenAt && (
+        <p className={'absolute bottom-[-1.75rem] left-4 text-secondary'}>
+          Seen at {seenAt}
+        </p>
+      )}
     </div>
   );
 };

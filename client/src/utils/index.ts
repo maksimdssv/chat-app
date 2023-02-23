@@ -7,15 +7,11 @@ import {
   uniqueNamesGenerator,
 } from 'unique-names-generator';
 
+export * from './users-tab';
+
 const AVATARS = ['patrick', 'spongebob', 'squidward', 'krabs', 'plankton'];
 
-// export const socket = io('http://localhost:3000');
-/*export const getCredentials = () => {
-  const name = getField('name', generateName);
-  const userId = getField('userId', generateUserId);
-  const avatar = getField('avatar', generateAvatar);
-  return { name, userId, avatar };
-};*/
+export const socket = io('http://localhost:3000');
 
 const getField = (fieldName: string, fallback: () => string) => {
   const value = localStorage.getItem(fieldName);
@@ -40,12 +36,12 @@ const generateAvatar = () => {
   return AVATARS[Math.round(Math.random() * AVATARS.length)];
 };
 
-export function classNames(...classes: unknown[]): string {
-  return classes.filter(Boolean).join(' ');
-}
-
 export const CREDENTIALS = {
   name: getField('name', generateName),
   userId: getField('userId', generateUserId),
   avatar: getField('avatar', generateAvatar),
 };
+
+export function getSetState<T>(setterFunc: (value: T) => void) {
+  return (value: T) => setterFunc(value);
+}

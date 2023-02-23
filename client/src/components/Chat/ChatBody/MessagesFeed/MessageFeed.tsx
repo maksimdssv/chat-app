@@ -1,34 +1,62 @@
-import Message, { MessageType } from './Message';
-import { useEffect, useRef } from 'react';
+import Message from './Message';
+import { useContext, useEffect, useRef } from 'react';
+import { CREDENTIALS } from '../../../../utils';
+import UserContext from '../../../../context/User';
+import { ChatRecord } from '../../../../types/socket';
 
 interface MessagesFeedProps {
-  messages: MessageType[];
+  chat: ChatRecord;
+  isTyping: boolean;
 }
 
-const MessagesFeed = ({ messages }: MessagesFeedProps) => {
+const getStatus = (name: string) => {
+  if (name === CREDENTIALS.name) return 'sent';
+  return 'received';
+};
+
+const MessagesFeed = ({ chat, isTyping }: MessagesFeedProps) => {
+  const { currentUserId, currentUser } = useContext(UserContext);
+  const { name } = currentUser[currentUserId];
   const ref = useRef<HTMLDivElement>(null);
-  const getStatus = (name: string) => {
-    if (name === 'Username') return 'sent';
-    return 'received';
+  const messagesAmount = chat.messages.length;
+  const getSeenAt = (index: number, length: number) => {
+    if (index === length - 1 && chat.messages[length - 1].user === CREDENTIALS.name) {
+      return chat.seenAt;
+    }
+    return '';
   };
 
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: 'auto' });
     }
-  }, [messages]);
+  }, [chat, isTyping]);
 
   return (
-    <div
-      className={
-        'my-4 mr-2 flex h-full flex-col gap-y-6 overflow-y-auto px-8 py-4 overflow-x-hidden scrollbar-thin scrollbar-track-[#BECBD9] scrollbar-thumb-[#9DAAB9] scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-3'
-      }
-    >
-      {messages.map((message, index) => (
-        <Message key={index} {...message} status={getStatus(message.name)} />
-      ))}
-      <div ref={ref} className={'invisible'} />
-    </div>
+    <>
+      <div
+        className={
+          'mt-4 mr-2 flex h-full flex-col gap-y-6 overflow-y-auto px-8 overflow-x-hidden scrollbar-thin scrollbar-track-[#BECBD9] scrollbar-thumb-[#9DAAB9] scrollbar-track-rounded-full scrollbar-thumb-rounded-full scrollbar-w-3'
+        }
+      >
+        {chat.messages?.map((message, index) => (
+          <Message
+            key={index}
+            {...message}
+            status={getStatus(message.user)}
+            seenAt={getSeenAt(index, messagesAmount)}
+          />
+        ))}
+        <div ref={ref} className={'invisible'} />
+      </div>
+      <p
+        className={`mx-auto mb-2 mt-1 inline-block ${
+          isTyping ? 'visible' : 'invisible'
+        } bottom-4 animate-pulse self-end justify-self-end text-blue-400`}
+      >
+        {name} is typing...
+      </p>
+    </>
   );
 };
 

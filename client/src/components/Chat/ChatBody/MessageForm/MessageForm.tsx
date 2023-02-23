@@ -1,10 +1,13 @@
+import Input from '../../../common/Input';
+
 interface MessageFormProps {
   onSubmit: (text: string) => void;
+  onChange: () => void;
 }
 
 import { FormEventHandler, useRef } from 'react';
 
-const MessageForm = ({ onSubmit }: MessageFormProps) => {
+const MessageForm = ({ onSubmit, onChange }: MessageFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const handleSubmit: FormEventHandler<HTMLFormElement> = (evt) => {
     evt.preventDefault();
@@ -22,13 +25,7 @@ const MessageForm = ({ onSubmit }: MessageFormProps) => {
       onSubmit={handleSubmit}
       ref={formRef}
     >
-      <input
-        name={'text'}
-        className={
-          'w-full rounded-lg py-2 px-4 focus:shadow-sm focus:shadow-blue-500 focus:outline focus:outline-blue-500'
-        }
-        placeholder={'Start chatting!'}
-      />
+      <Input name={'text'} placeholder={'Start chatting!'} onChange={onChange} />
       <button
         className={
           'flex justify-center whitespace-nowrap rounded-lg bg-button px-16 py-2 font-semibold text-white hover:bg-blue-500 active:bg-blue-700'
