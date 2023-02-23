@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "@tailwindcss/line-clamp": "^0.4.2",
-    "tailwind-scrollbar": "^2.1.0"
-  }
-}
