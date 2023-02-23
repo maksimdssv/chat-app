@@ -11,6 +11,10 @@ export * from './users-tab';
 
 const AVATARS = ['patrick', 'spongebob', 'squidward', 'krabs', 'plankton'];
 
+export function getImageUrl(name: string) {
+  return new URL(`/src/public/${name}.jpg`, import.meta.url).href;
+}
+
 export const socket = io('http://localhost:3000');
 
 const getField = (fieldName: string, fallback: () => string) => {

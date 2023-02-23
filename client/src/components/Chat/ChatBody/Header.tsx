@@ -1,3 +1,5 @@
+import { getImageUrl } from '../../../utils';
+
 interface HeaderProps {
   name: string;
   avatar: string;
@@ -8,7 +10,7 @@ const Header = ({ name, avatar }: HeaderProps) => {
     <header className={'flex flex-row gap-x-4 bg-chat-header md:gap-x-8'}>
       <div className={'flex items-center'}>
         <img
-          src={`src/public/${avatar}.jpg`}
+          src={getImageUrl(avatar)}
           alt={''}
           className={
             'ml-4 h-32 w-24 rounded-xl bg-blue-50 object-cover md:ml-0 md:h-52 md:w-52 md:rounded-none'

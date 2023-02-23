@@ -1,4 +1,5 @@
 import { UserRecord as UserType, Users } from '../../../../types/socket';
+import { getImageUrl } from '../../../../utils';
 
 export interface UserProps {
   userArr: [id: string, user: UserType];
@@ -19,7 +20,7 @@ const User = ({ userArr, onClick, currentUserId }: UserProps) => {
       }`}
     >
       <img
-        src={`src/public/${avatar}.jpg`}
+        src={getImageUrl(avatar)}
         className={'mx-4 h-16 w-16 rounded-md object-cover md:h-full md:w-20'}
         alt={''}
       />

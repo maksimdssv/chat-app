@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 
 	socket.on('message', (message: ReceivedMessage, chatId: string) => {
 		saveMessage(message, chatId);
-		socket.to(chatId).emit('stop-typing', false);
+		socket.to(chatId).emit('typing', false);
 	});
 
 	socket.on('bots', (message: ReceivedMessage, chatId: string, botType: BotsType) => {
