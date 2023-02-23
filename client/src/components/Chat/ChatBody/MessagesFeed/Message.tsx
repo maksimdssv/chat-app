@@ -16,8 +16,8 @@ const positions = {
 };
 
 const clipperPositions = {
-  sent: 'right-[-25px] rotate-90',
-  received: 'left-[-25px] rotate-[-90deg]',
+  sent: 'right-[-1.6rem] rotate-90',
+  received: 'left-[-1.6rem] rotate-[-90deg]',
 };
 
 const Message = ({ user, status, text, date, seenAt }: MessageProps) => {

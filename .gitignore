@@ -1,5 +1,5 @@
 node_modules
 .idea
-chats
-users
+chats.json
+users.json
 dist

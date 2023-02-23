@@ -4,7 +4,7 @@ import { CREDENTIALS, getSetState, socket } from '../../../utils';
 import SectionButtonsContainer, {
   ButtonProps,
 } from './SectionButtonsContainer/SectionButtonsContainer';
-import { Users } from '../../../types/socket';
+import { Users } from '../../../types';
 import {
   createFilterFunctionFilter,
   createFilterFunctionStatus,
@@ -51,7 +51,7 @@ const UsersTab = () => {
   return (
     <section
       className={
-        'flex w-40 flex-col justify-between overflow-hidden rounded-r-sm bg-white pb-6 md:w-72'
+        'flex w-40 flex-col justify-between overflow-hidden rounded-r-sm bg-white pb-6 md:w-72 '
       }
     >
       <SectionButtonsContainer

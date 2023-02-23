@@ -21,7 +21,7 @@ const MessageForm = ({ onSubmit, onChange }: MessageFormProps) => {
 
   return (
     <form
-      className={'mx-8 flex flex-col gap-y-4 gap-x-8 xl:flex-row'}
+      className={'mx-8 flex flex-col gap-y-4 gap-x-8 md:flex-row'}
       onSubmit={handleSubmit}
       ref={formRef}
     >

@@ -14,7 +14,7 @@ const Chat = () => {
     };
   }, []);
   return (
-    <div className={'flex h-screen bg-main px-32 pt-8 pb-16'}>
+    <div className={'flex h-screen flex-row bg-main md:py-8 md:px-16 lg:px-16 xl:px-32'}>
       <ChatBody />
       <UsersTab />
     </div>

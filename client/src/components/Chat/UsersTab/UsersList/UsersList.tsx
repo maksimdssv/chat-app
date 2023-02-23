@@ -1,11 +1,15 @@
 import User from './User';
-import { Users } from '../../../../types/socket';
+import { Users } from '../../../../types';
+import { useContext } from 'react';
+import UserContext from '../../../../context/User';
+import { getSetState } from '../../../../utils';
 
 interface UsersListProps {
   users: Users;
 }
 
 const UsersList = ({ users }: UsersListProps) => {
+  const { setCurrentUser, currentUserId } = useContext(UserContext);
   const entries = Object.entries(users);
   const usersIsEmpty = entries.length === 0;
 
@@ -17,7 +21,14 @@ const UsersList = ({ users }: UsersListProps) => {
     >
       {entries.map((userArr) => {
         const [id] = userArr;
-        return <User key={id} userArr={userArr} />;
+        return (
+          <User
+            key={id}
+            userArr={userArr}
+            onClick={getSetState<Users>(setCurrentUser)}
+            currentUserId={currentUserId}
+          />
+        );
       })}
       {usersIsEmpty && (
         <h3 className={'mt-5 text-center text-secondary'}>Nothing here for now...</h3>

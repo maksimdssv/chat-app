@@ -20,7 +20,7 @@
   }
 
   html {
-    @apply text-main overflow-hidden text-[12px] md:text-[14px] lg:text-[16px] xl:text-[18px]
+    @apply text-main overflow-hidden text-[2vw] md:text-[1.2vw] lg:text-[1.25vw] xl:text-[1vw] 2xl:text-[0.9vw];
   }
 }
 

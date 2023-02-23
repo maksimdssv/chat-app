@@ -113,13 +113,12 @@ function fireBotAction(
 	seconds: number,
 ) {
 	const newMessage: Message = {
-		text: '',
+		text: message,
 		user: BOTS[botType].name,
 		date: '',
 	};
-	newMessage.text = reverseString(message);
-	newMessage.date = getCurrentTime();
 	setTimeout(() => {
+		newMessage.date = getCurrentTime();
 		socket.emit('typing', false);
 		chatHandler.addMessage(chatId, newMessage);
 		socket.emit('message', newMessage);

@@ -2,7 +2,7 @@ import Message from './Message';
 import { useContext, useEffect, useRef } from 'react';
 import { CREDENTIALS } from '../../../../utils';
 import UserContext from '../../../../context/User';
-import { ChatRecord } from '../../../../types/socket';
+import { ChatRecord } from '../../../../types';
 
 interface MessagesFeedProps {
   chat: ChatRecord;
@@ -50,7 +50,7 @@ const MessagesFeed = ({ chat, isTyping }: MessagesFeedProps) => {
         <div ref={ref} className={'invisible'} />
       </div>
       <p
-        className={`mx-auto mb-2 mt-1 inline-block ${
+        className={`mx-auto mb-2 mt-1 inline-block select-none ${
           isTyping ? 'visible' : 'invisible'
         } bottom-4 animate-pulse self-end justify-self-end text-blue-400`}
       >
