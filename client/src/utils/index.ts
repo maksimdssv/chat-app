@@ -37,7 +37,7 @@ const generateUserId = () => {
   return window.crypto.randomUUID();
 };
 const generateAvatar = () => {
-  return AVATARS[Math.round(Math.random() * AVATARS.length)];
+  return AVATARS[Math.round(Math.random() * (AVATARS.length - 1))];
 };
 
 export const CREDENTIALS = {
