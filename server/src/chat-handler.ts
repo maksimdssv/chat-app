@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from 'fs/promises';
+import { readFile, readdir, writeFile, mkdir } from 'fs/promises';
 import { BOTS } from './utils';
 import { Chats, Message, ReceivedUserCredentials, Users } from './types/socket';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,12 +16,18 @@ export default class ChatHandler {
 	}
 
 	async init() {
-		const files = await readdir(this.path);
-		if (!files.includes('chats.json')) await this.writeToFile(this.chatsPath, {});
-		if (!files.includes('users.json')) await this.writeToFile(this.usersPath, BOTS);
-		this.chats = await this.readFile<Chats>(this.chatsPath);
-		this.users = await this.readFile<Users>(this.usersPath);
-		setInterval(this.saveData.bind(this), 30000);
+		let files: string[] = [];
+		try {
+			files = await readdir(this.path);
+		} catch (e) {
+			await mkdir(this.path);
+		} finally {
+			if (!files.includes('chats.json')) await this.writeToFile(this.chatsPath, {});
+			if (!files.includes('users.json')) await this.writeToFile(this.usersPath, BOTS);
+			this.chats = await this.readFile<Chats>(this.chatsPath);
+			this.users = await this.readFile<Users>(this.usersPath);
+			setInterval(this.saveData.bind(this), 30000);
+		}
 	}
 
 	private async readFile<T>(filePath: string) {
