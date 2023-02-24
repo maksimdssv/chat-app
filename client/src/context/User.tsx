@@ -1,6 +1,5 @@
 import { createContext, useState } from 'react';
-import { Users } from '../types/socket';
-import { getSetState } from '../utils';
+import { Users } from '../types';
 
 const UserContext = createContext<UserContext>({
   currentUserId: '',
@@ -22,7 +21,7 @@ export const UserContextProvider = ({ children }: { children: JSX.Element }) => 
 
   const value: UserContext = {
     currentUser,
-    setCurrentUser: getSetState<Users>(setCurrentUser),
+    setCurrentUser,
     currentUserId,
   };
 

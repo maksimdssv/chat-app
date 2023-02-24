@@ -2,7 +2,6 @@ import User from './User';
 import { Users } from '../../../../types';
 import { useContext } from 'react';
 import UserContext from '../../../../context/User';
-import { getSetState } from '../../../../utils';
 
 interface UsersListProps {
   users: Users;
@@ -21,12 +20,13 @@ const UsersList = ({ users }: UsersListProps) => {
     >
       {entries.map((userArr) => {
         const [id] = userArr;
+        const isSelected = id === currentUserId;
         return (
           <User
             key={id}
             userArr={userArr}
-            onClick={getSetState<Users>(setCurrentUser)}
-            currentUserId={currentUserId}
+            onClick={setCurrentUser}
+            isSelected={isSelected}
           />
         );
       })}

@@ -45,7 +45,3 @@ export const CREDENTIALS = {
   userId: getField('userId', generateUserId),
   avatar: getField('avatar', generateAvatar),
 };
-
-export function getSetState<T>(setterFunc: (value: T) => void) {
-  return (value: T) => setterFunc(value);
-}

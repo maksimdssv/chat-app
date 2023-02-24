@@ -1,10 +1,10 @@
 import Header from './Header';
 import MessagesFeed from './MessagesFeed/MessageFeed';
 import MessageForm from './MessageForm/MessageForm';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { CREDENTIALS, getSetState, socket } from '../../../utils';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { CREDENTIALS, socket } from '../../../utils';
 import UserContext from '../../../context/User';
-import { bots, ChatRecord, Message } from '../../../types/socket';
+import { bots, ChatRecord, Message } from '../../../types';
 import Loader from '../../common/Loader';
 
 const defaultValueChat: ChatRecord = {
@@ -22,8 +22,10 @@ function notifyOfTyping(timeout: NodeJS.Timeout | undefined, chatId: string | un
   };
 }
 
-function notifySeenAt(chatId: string) {
-  socket.emit('seen', chatId);
+function checkMessageAndNotify(message: Message, chatId?: string) {
+  if (message.user !== CREDENTIALS.name && chatId) {
+    socket.emit('seen', chatId);
+  }
 }
 
 const ChatBody = () => {
@@ -46,47 +48,42 @@ const ChatBody = () => {
     socket.emit(msgEvent, newMessage, chatIdRef.current, currentUserId);
   };
 
-  const loadChat = useCallback(function loadChat(chat: ChatRecord, roomId: string) {
+  function loadChat(chat: ChatRecord, roomId: string) {
     setChat(chat);
     const messagesAmount = chat.messages.length;
     chatIdRef.current = roomId;
     if (!chat.seenAt && messagesAmount > 0) {
-      checkMessage(chat.messages[messagesAmount - 1]);
+      checkMessageAndNotify(chat.messages[messagesAmount - 1], chatIdRef.current);
     }
     setIsLoading(false);
-  }, []);
+  }
 
   function setSeenAt(date: string) {
     setChat((oldChat): ChatRecord => ({ messages: [...oldChat.messages], seenAt: date }));
   }
 
-  const receiveMessage = useCallback(function receiveMessage(message: Message) {
-    checkMessage(message);
+  function receiveMessage(message: Message) {
+    checkMessageAndNotify(message, chatIdRef.current);
     setChat(
       (oldChat): ChatRecord => ({ messages: [...oldChat.messages, message], seenAt: '' }),
     );
-  }, []);
-
-  function checkMessage(message: Message) {
-    if (message.user !== CREDENTIALS.name && chatIdRef.current) {
-      notifySeenAt(chatIdRef.current);
-    }
   }
 
   useEffect(() => {
     if (currentUserId) socket.emit('join-chat', userId, currentUserId, loadChat);
-  }, [userId, currentUserId, loadChat]);
+    setIsTyping(false);
+  }, [userId, currentUserId]);
 
   useEffect(() => {
     socket.on('message', receiveMessage);
-    socket.on('typing', getSetState<boolean>(setIsTyping));
+    socket.on('typing', setIsTyping);
     socket.on('seen', setSeenAt);
     return () => {
       socket.off('message');
       socket.off('typing');
       socket.off('seen');
     };
-  }, [receiveMessage]);
+  }, []);
 
   return (
     <div

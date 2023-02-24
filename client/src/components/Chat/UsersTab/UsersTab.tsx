@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import UsersList from './UsersList/UsersList';
-import { CREDENTIALS, getSetState, socket } from '../../../utils';
+import {
+  createFilterFunctionFilter,
+  createFilterFunctionStatus,
+  CREDENTIALS,
+  filterUsers,
+  socket,
+} from '../../../utils';
 import SectionButtonsContainer, {
   ButtonProps,
 } from './SectionButtonsContainer/SectionButtonsContainer';
 import { Users } from '../../../types';
-import {
-  createFilterFunctionFilter,
-  createFilterFunctionStatus,
-  filterUsers,
-} from '../../../utils';
 import Loader from '../../common/Loader';
 import Input from '../../common/Input';
 
@@ -55,7 +56,7 @@ const UsersTab = () => {
       }
     >
       <SectionButtonsContainer
-        onClick={getSetState<SectionKey>(setCurrentSection)}
+        onClick={setCurrentSection}
         active={currentSection}
         buttons={BUTTONS}
       />
@@ -73,7 +74,7 @@ const UsersTab = () => {
           name={'name'}
           className={'outline outline-2 outline-gray-300'}
           placeholder={'Search...'}
-          onChange={getSetState<string>(setFilter)}
+          onChange={setFilter}
         />
       </div>
     </section>

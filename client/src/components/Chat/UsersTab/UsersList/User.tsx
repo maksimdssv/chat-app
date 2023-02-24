@@ -4,19 +4,20 @@ import { getImageUrl } from '../../../../utils';
 export interface UserProps {
   userArr: [id: string, user: UserType];
   onClick: (user: Users) => void;
-  currentUserId: string;
+  isSelected: boolean;
 }
 
-const User = ({ userArr, onClick, currentUserId }: UserProps) => {
-  const [id, { avatar, name, online }] = userArr;
+const User = ({ userArr, onClick, isSelected }: UserProps) => {
+  const [, { avatar, name, online }] = userArr;
 
   const onClickFunc = () => onClick(Object.fromEntries([userArr]));
 
   return (
     <button
       onClick={onClickFunc}
+      type={'button'}
       className={`relative flex h-fit w-full flex-col items-center justify-evenly py-2 hover:bg-gray-100 active:bg-gray-200 md:h-24 md:flex-row ${
-        currentUserId === id ? 'bg-section' : ''
+        isSelected ? 'bg-section' : ''
       }`}
     >
       <img
