@@ -15,6 +15,7 @@ interface UserContext {
   currentUser: Users;
 }
 
+// This context was created to give access to selected user to different parts of chat
 export const UserContextProvider = ({ children }: { children: JSX.Element }) => {
   const [currentUser, setCurrentUser] = useState<Users>({});
   const currentUserId = Object.keys(currentUser)[0];

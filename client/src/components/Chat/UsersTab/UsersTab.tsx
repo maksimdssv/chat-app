@@ -38,6 +38,8 @@ const UsersTab = () => {
   const [filter, setFilter] = useState<string>('');
   const [users, setUsers] = useState<Users>({});
 
+  // contacts event is listened here, because no other element uses list of users.
+  // Handled our user in list by deleting his id from obj, thus saving the work of filtering it anywhere
   useEffect(() => {
     socket.on('contacts', (contacts: Users) => {
       delete contacts[CREDENTIALS.userId];
@@ -50,6 +52,7 @@ const UsersTab = () => {
   }, []);
 
   return (
+    // Seperated as many elements to different components as I could to make code more readable and declarative.
     <section
       className={
         'flex w-40 flex-col justify-between overflow-hidden rounded-r-sm bg-white pb-6 md:w-72 '
@@ -61,6 +64,7 @@ const UsersTab = () => {
         buttons={BUTTONS}
       />
       {!isLoading && (
+        // filtering is done on frontend part, due to relative ease of it. Utilized functional programming by making filterUsers func
         <UsersList
           users={filterUsers(users, [
             createFilterFunctionStatus(currentSection),

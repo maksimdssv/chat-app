@@ -15,6 +15,7 @@ export function getImageUrl(name: string) {
   return new URL(`/src/public/${name}.jpg`, import.meta.url).href;
 }
 
+// socket was exported to utils because there is no need of setting it up more than once
 export const socket = io('http://localhost:3000');
 
 const getField = (fieldName: string, fallback: () => string) => {
@@ -40,6 +41,7 @@ const generateAvatar = () => {
   return AVATARS[Math.round(Math.random() * (AVATARS.length - 1))];
 };
 
+// Credentials are const in utils because they are not meant to be changed or set in any of components
 export const CREDENTIALS = {
   name: getField('name', generateName),
   userId: getField('userId', generateUserId),

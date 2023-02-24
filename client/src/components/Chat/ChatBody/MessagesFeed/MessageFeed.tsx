@@ -30,7 +30,7 @@ const MessagesFeed = ({ chat, isTyping }: MessagesFeedProps) => {
     if (ref.current) {
       ref.current.scrollIntoView({ behavior: 'auto' });
     }
-  }, [chat, isTyping]);
+  }, [chat]);
 
   return (
     <>

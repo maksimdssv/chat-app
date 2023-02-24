@@ -1,66 +1,46 @@
-import {
-	BotsType,
-	ChatRecord,
-	Message,
-	ReceivedMessage,
-	ReceivedUserCredentials,
-} from './types/socket';
+import { BotsType, ChatRecord, Message, ReceivedMessage, ReceivedUserCredentials } from './types/socket';
 import { Server, Socket } from 'socket.io';
 import { BOTS, getCurrentTime, getRandomTime, reverseString } from './utils';
 import ChatHandler from './chat-handler';
 
+// chat handler was created to separate concern of dealing with users and chats
 const chatHandler = new ChatHandler();
 
 const io = new Server(3000, {
 	cors: { origin: 'http://localhost:5173' },
 });
 
-chatHandler.init().then(() => {
-	const contacts = Object.keys(chatHandler.getUsers());
-	const users = contacts.slice(4);
-	for (const user of users) {
-		subscribeToSpam(user);
-	}
-});
+// init out files and starting data, and also resubscribe every user to spam bot, if server restarted
+chatHandler.init().then(resubscribeUsers);
 
 io.on('connection', (socket) => {
 	let userId = '';
-	socket.on('login', (userCredentials: ReceivedUserCredentials) => {
-		userId = userCredentials.userId;
-		chatHandler.connectUser(userCredentials);
-		io.emit('contacts', chatHandler.getUsers());
-		if (!chatHandler.checkUserSubscription(userId)) subscribeToSpam(userId);
-	});
 
-	socket.on(
-		'join-chat',
-		(
-			firstUserId: string,
-			secondUserId: string,
-			cb: (chat: ChatRecord, roomId: string) => void,
-		) => {
-			disconnectSocket(socket);
-			const { roomId, chat } = chatHandler.getChat(firstUserId, secondUserId);
-			socket.join(roomId);
-			cb(chat, roomId);
-		},
-	);
+	function handleConnect() {
+		return (userCredentials: ReceivedUserCredentials) => {
+			userId = userCredentials.userId;
+			chatHandler.connectUser(userCredentials);
+			io.emit('contacts', chatHandler.getUsers());
+			if (!chatHandler.checkUserSubscription(userId)) subscribeToSpam(userId);
+		};
+	}
 
-	socket.on('message', (message: ReceivedMessage, chatId: string) => {
-		saveMessage(message, chatId);
-		socket.to(chatId).emit('typing', false);
-	});
+	function handleDisconnect() {
+		return () => {
+			chatHandler.disconnectUser(userId);
+			io.emit('contacts', chatHandler.getUsers());
+		};
+	}
 
-	socket.on('bots', (message: ReceivedMessage, chatId: string, botType: BotsType) => {
-		saveMessage(message, chatId);
-		useBot(botType, chatId, socket, message.text);
-	});
+	socket.on('login', handleConnect());
 
-	socket.on('seen', (chatId: string) => {
-		const date = getCurrentTime();
-		chatHandler.setSeenAt(chatId, date);
-		socket.to(chatId).emit('seen', date);
-	});
+	socket.on('join-chat', handleChatJoin(socket));
+
+	socket.on('message', handleMessageReceive(socket));
+
+	socket.on('bots', handleBotMessageReceive(socket));
+
+	socket.on('seen', handleSeenEvt(socket));
 
 	socket.on('typing', (chatId) => {
 		socket.to(chatId).emit('typing', true);
@@ -70,11 +50,45 @@ io.on('connection', (socket) => {
 		socket.to(chatId).emit('typing', false);
 	});
 
-	socket.on('disconnect', () => {
-		chatHandler.disconnectUser(userId);
-		io.emit('contacts', chatHandler.getUsers());
-	});
+	socket.on('disconnect', handleDisconnect());
 });
+
+// Probably could have moved all those functions to separate class/file, but since socket is out only concern, I left them here
+
+function handleChatJoin(socket: Socket) {
+	return (
+		firstUserId: string,
+		secondUserId: string,
+		cb: (chat: ChatRecord, roomId: string) => void,
+	) => {
+		disconnectSocket(socket);
+		const { roomId, chat } = chatHandler.getChat(firstUserId, secondUserId);
+		socket.join(roomId);
+		cb(chat, roomId);
+	};
+}
+
+function handleMessageReceive(socket: Socket) {
+	return (message: ReceivedMessage, chatId: string) => {
+		saveMessage(message, chatId);
+		socket.to(chatId).emit('typing', false);
+	};
+}
+
+function handleBotMessageReceive(socket: Socket) {
+	return (message: ReceivedMessage, chatId: string, botType: BotsType) => {
+		saveMessage(message, chatId);
+		useBot(botType, chatId, socket, message.text);
+	};
+}
+
+function handleSeenEvt(socket: Socket) {
+	return (chatId: string) => {
+		const date = getCurrentTime();
+		chatHandler.setSeenAt(chatId, date);
+		socket.to(chatId).emit('seen', date);
+	};
+}
 
 function disconnectSocket(socket: Socket) {
 	const rooms = Array.from(socket.rooms);
@@ -146,4 +160,12 @@ function saveMessage(message: ReceivedMessage, chatId: string) {
 	};
 	chatHandler.addMessage(chatId, newMessage);
 	io.to(chatId).emit('message', newMessage);
+}
+
+function resubscribeUsers() {
+	const contacts = Object.keys(chatHandler.getUsers());
+	const users = contacts.slice(4);
+	for (const user of users) {
+		subscribeToSpam(user);
+	}
 }

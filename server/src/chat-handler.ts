@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile, mkdir } from 'fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'fs/promises';
 import { BOTS } from './utils';
 import { Chats, Message, ReceivedUserCredentials, Users } from './types/socket';
 import { v4 as uuidv4 } from 'uuid';
@@ -26,6 +26,8 @@ export default class ChatHandler {
 			if (!files.includes('users.json')) await this.writeToFile(this.usersPath, BOTS);
 			this.chats = await this.readFile<Chats>(this.chatsPath);
 			this.users = await this.readFile<Users>(this.usersPath);
+			// this interval was made to autosave data and not save it in every action.
+			// Prone to possible data loss, but 30 seconds is usually not much of a trouble
 			setInterval(this.saveData.bind(this), 30000);
 		}
 	}
@@ -54,7 +56,8 @@ export default class ChatHandler {
 	}
 
 	disconnectUser(userId: string) {
-		this.users[userId].online = false;
+		// check if userId is truthy, due to seldom bug of user entering frontend with backend down and refreshing page when backend is up
+		if (userId) this.users[userId].online = false;
 	}
 
 	private createUser(user: ReceivedUserCredentials) {

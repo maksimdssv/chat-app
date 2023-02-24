@@ -12,6 +12,7 @@ const defaultValueChat: ChatRecord = {
   seenAt: '',
 };
 
+// initialized functions outside component as they don't rely on any of component features
 function notifyOfTyping(timeout: NodeJS.Timeout | undefined, chatId: string | undefined) {
   return () => {
     clearTimeout(timeout);
@@ -28,8 +29,10 @@ function checkMessageAndNotify(message: Message, chatId?: string) {
   }
 }
 
+// So far the biggest component. Handles everything related to chat(displaying, sending, receiving messages, selected user)
 const ChatBody = () => {
   const { currentUser, currentUserId } = useContext(UserContext);
+  // our nickname and avatar is being displayed if no user is selected
   const { name, avatar } = currentUser[currentUserId] || CREDENTIALS;
   const { userId } = CREDENTIALS;
   const [chat, setChat] = useState<ChatRecord>(defaultValueChat);
@@ -74,6 +77,7 @@ const ChatBody = () => {
     setIsTyping(false);
   }, [userId, currentUserId]);
 
+  // this component handles everything about chat to make inner components more or less pure.
   useEffect(() => {
     socket.on('message', receiveMessage);
     socket.on('typing', setIsTyping);
@@ -85,6 +89,7 @@ const ChatBody = () => {
     };
   }, []);
 
+  // separated almost all displaying logic into inner components
   return (
     <div
       className={'flex flex-1 flex-col overflow-hidden rounded-l-sm bg-chat-body pb-6'}
